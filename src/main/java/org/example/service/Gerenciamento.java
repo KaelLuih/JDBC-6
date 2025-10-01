@@ -3,10 +3,8 @@ package org.example.service;
 import org.example.dao.FornecedorDAO;
 import org.example.dao.MaterialDAO;
 import org.example.dao.NotaEntradaDAO;
-import org.example.model.Fornecedor;
-import org.example.model.Material;
-import org.example.model.NotaEntrada;
-import org.example.model.Requisicao;
+import org.example.dao.NotaEntradaItemDAO;
+import org.example.model.*;
 
 import java.sql.SQLException;
 import java.time.LocalDate;
@@ -21,22 +19,28 @@ public class Gerenciamento {
  static Scanner input = new Scanner(System.in);
 
     public void cadastrarFornecedor() throws SQLException {
-        System.out.println("Digite o nome do fornecedor");
+        System.out.println("Digite o nome do fornecedor:");
         String nome = input.nextLine();
 
-        System.out.println("Digite o cnpj ");
+        System.out.println("Digite o cnpj:");
         String cnpj = input.nextLine();
 
+        if (!nome.trim().isEmpty() && !cnpj.trim().isEmpty()) {
 
-        var fornecedor = new Fornecedor(nome,cnpj);
-        var fornecedorDAO = new FornecedorDAO();
+            var fornecedorDAO = new FornecedorDAO();
 
-        if(!nome.isEmpty() ||  !cnpj.isEmpty()){
-            fornecedorDAO.cadastrarfornecedor(fornecedor);
-        }else {
-            System.out.println("Não pode deixar vazio");
+            if (fornecedorDAO.verificarCnpj(cnpj)) {
+                System.out.println("\n Erro: Este CNPJ já está cadastrado no sistema.");
+            } else {
+
+                var fornecedor = new Fornecedor(nome, cnpj);
+                fornecedorDAO.cadastrarfornecedor(fornecedor);
+                System.out.println("\nFornecedor cadastrado com sucesso!");
+            }
+
+        } else {
+            System.out.println("Atenção: O nome e o CNPJ não podem ser vazios.");
         }
-
     }
     public void CadastarMaterial()throws SQLException{
         System.out.println("Digite o nome do material");
@@ -53,6 +57,7 @@ public class Gerenciamento {
         if (!nome.isEmpty()){
             if(quantidade >= 0){
                 materialDAO.cadastrarMaterial(material);
+                System.out.printf("\n Material cadastrado com sucesso");
             }else{
                 System.out.println("A quantidade no estoque deve ser no minimo maior que zero");
             }
@@ -62,37 +67,117 @@ public class Gerenciamento {
 
 
     }
-    public void RegistrarNotaEntrega()throws SQLException{
+    public void RegistrarNotaEntrega()throws SQLException {
+        boolean sair = false;
         var forecedorDAO = new FornecedorDAO();
         List<Fornecedor> listarFornecedores = forecedorDAO.ListarFornecedores();
-        List<Integer> Verificacao = new ArrayList<>();
+        var materialDAO = new MaterialDAO();
+        List<Integer> Verificação = new ArrayList<>();
+        List<Material> listarMAterial = materialDAO.ListarMaterial();
 
         listarFornecedores.forEach(fornecedor -> {
-            System.out.println("Id" + fornecedor.getId());
-            System.out.println("Nome" + fornecedor.getNome());
-            System.out.println("CNPJ" + fornecedor.getCnpj());
+            System.out.println("Id: " + fornecedor.getId());
+            System.out.println("___________");
+            System.out.println("Nome: " + fornecedor.getNome());
+            System.out.println("___________");
+            System.out.println("CNPJ :" + fornecedor.getCnpj());
+            System.out.println("___________");
         });
 
 
-        System.out.println("Digite o id do Fornecedor");
+        System.out.println("\nDigite o id do Fornecedor");
         int id = input.nextInt();
         input.nextLine();
 
-        int indiceFornecedor =Verificacao.indexOf(id);
 
-        Fornecedor fornecedorEscolhido = listarFornecedores.get(indiceFornecedor);
-
-        if(fornecedorEscolhido.getId() > 0){
-            LocalDateTime data = LocalDateTime.now();
+        LocalDateTime data = LocalDateTime.now();
 
 
-            NotaEntrada notaEntrada = new NotaEntrada(id,data);
-            var NotaEntradaDAO = new NotaEntradaDAO();
-            NotaEntradaDAO.cadastarrEntrada(notaEntrada);
-            System.out.println("Sucesso ao cadastrar");
-        }else{
-            System.out.println("Não foi ´possivel realizar nao existe esse fornecedor");
+        NotaEntrada notaEntrada = new NotaEntrada(id, data);
+        var NotaEntradaDAO = new NotaEntradaDAO();
+        NotaEntradaDAO.cadastarrEntrada(notaEntrada);
+        System.out.println("Sucesso ao cadastrar");
+
+        while (!sair) {
+            listarMAterial.forEach(material -> {
+                System.out.println("ID: " + material.getId());
+                System.out.println("___________");
+                System.out.println("NOME: " + material.getNome());
+                System.out.println("___________");
+                System.out.println("UNIDADE: " + material.getUnidade());
+                System.out.println("___________");
+                System.out.println("QUANTIDADE: " + material.getQuantidade());
+            });
+
+            System.out.println("\nDigite o id do material que deseja associar");
+            int idMaterial = input.nextInt();
+            input.nextLine();
+
+
+            Material materialEscolhido = null;
+
+
+            for (Material material : listarMAterial) {
+
+                if (material.getId() == idMaterial) {
+
+                    materialEscolhido = material;
+
+                    break;
+                }
+            }
+
+
+            if (materialEscolhido != null) {
+
+                System.out.println("Digite a quantidade que está entrando no estoque:");
+                double estoque = input.nextDouble();
+                input.nextLine();
+
+
+                if (estoque >= 0) {
+                    var notaentradaitemDAO = new NotaEntradaItemDAO();
+                    var notaentrdaitem = new NotaEntradaItem(id, idMaterial, estoque);
+                    notaentradaitemDAO.CadastrarNotaEntradaItem(notaentrdaitem);
+                    System.out.println("Material " + materialEscolhido.getNome() + " associado com sucesso.");
+                    System.out.println("Deseja cadastar mais um 1-sim 2-não");
+                    int escolha = input.nextInt();
+                    if (escolha == 1){
+                        sair = false;
+                    }else {
+                        sair = true;
+
+                    }
+                } else {
+                    System.out.println("Quantidade no estoque deve ser maior que 0");
+
+                }
+
+            } else {
+                System.out.println("ERRO: Material com ID " + idMaterial + " não foi encontrado!");
+            }
         }
+    }
+    public void CriarRequisiçãodeMaterial()throws SQLException{
+        var materialDAO = new MaterialDAO();
+        List<Material> listarMAterial = materialDAO.ListarMaterial();
+
+        System.out.println("Digite o setor da requisição");
+        String setor;
+        listarMAterial.forEach(material -> {
+            System.out.println("ID: " + material.getId());
+            System.out.println("___________");
+            System.out.println("NOME: " + material.getNome());
+            System.out.println("___________");
+            System.out.println("UNIDADE: " + material.getUnidade());
+            System.out.println("___________");
+            System.out.println("QUANTIDADE: " + material.getQuantidade());
+        });
+
+
+
+
+
 
     }
 

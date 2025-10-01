@@ -21,13 +21,29 @@ public class FornecedorDAO {
             stmt.setString(1,fornecedor.getNome());
             stmt.setString(2,fornecedor.getCnpj());
             stmt.executeUpdate();
-        }catch (SQLIntegrityConstraintViolationException duplicacao){
-            System.out.println("os valores do cnpj nao podem ser duplicados");
-            duplicacao.getMessage();
+
         }
 
 
     }
+
+    public boolean verificarCnpj(String cnpj) throws SQLException {
+        String sql = "SELECT COUNT(*) FROM Fornecedor WHERE cnpj = ?";
+
+        try (Connection conn = Conexao.conectar();
+             PreparedStatement stmt = conn.prepareStatement(sql)) {
+
+            stmt.setString(1, cnpj);
+            ResultSet rs = stmt.executeQuery();
+
+            rs.next();
+            return rs.getInt(1) > 0;
+
+
+        }
+    }
+
+
 
     public List<Fornecedor> ListarFornecedores()throws SQLException{
         List <Fornecedor> fornecedores = new ArrayList<>();

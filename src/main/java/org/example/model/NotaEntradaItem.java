@@ -1,12 +1,12 @@
 package org.example.model;
 
 public class NotaEntradaItem {
-    private int id;
+    private int idNotaEntrada;
     private int idMaterial;
     private double quantidade;
 
-    public NotaEntradaItem(int id, int idMaterial, double quantidade) {
-        this.id = id;
+    public NotaEntradaItem(int idNotaEntrada, int idMaterial, double quantidade) {
+        this.idNotaEntrada = idNotaEntrada;
         this.idMaterial = idMaterial;
         this.quantidade = quantidade;
     }
@@ -16,12 +16,12 @@ public class NotaEntradaItem {
         this.quantidade = quantidade;
     }
 
-    public int getId() {
-        return id;
+    public int getidNotaEntrada() {
+        return idNotaEntrada;
     }
 
-    public void setId(int id) {
-        this.id = id;
+    public void setId(int idNotaEntrada) {
+        this.idNotaEntrada = idNotaEntrada;
     }
 
     public int getIdMaterial() {

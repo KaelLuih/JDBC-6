@@ -4,10 +4,9 @@ import org.example.model.Fornecedor;
 import org.example.model.Material;
 import org.example.util.Conexao;
 
-import java.sql.Connection;
-import java.sql.PreparedStatement;
-import java.sql.SQLException;
-import java.sql.SQLIntegrityConstraintViolationException;
+import java.sql.*;
+import java.util.ArrayList;
+import java.util.List;
 
 public class MaterialDAO {
 
@@ -31,6 +30,31 @@ public class MaterialDAO {
         }
 
 
+    }
+    public List<Material> ListarMaterial()throws SQLException{
+        List <Material> materials = new ArrayList<>();
+
+        String query = "SELECT" +
+                " id," +
+                "nome," +
+                "unidade," +
+                "estoque" +
+                " FROM Material " +
+                "";
+        try(Connection conn = Conexao.conectar();
+            PreparedStatement stmt = conn.prepareStatement(query)){
+            ResultSet rs = stmt.executeQuery();
+
+            while(rs.next()){
+                int id = rs.getInt("id");
+                String nome = rs.getString("nome");
+                String unidade = rs.getString("unidade");
+                double estoque = rs.getDouble("estoque");
+                var material = new Material(id,nome,unidade,estoque);
+                materials.add(material);
+            }
+        }
+        return materials;
     }
 
 

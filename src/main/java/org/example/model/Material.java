@@ -20,6 +20,10 @@ public class Material {
         this.quantidade = quantidade;
     }
 
+    public Material() {
+
+    }
+
     public int getId() {
         return id;
     }
