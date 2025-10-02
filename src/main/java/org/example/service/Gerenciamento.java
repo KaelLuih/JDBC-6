@@ -173,6 +173,9 @@ public class Gerenciamento {
             System.out.println("___________");
             System.out.println("QUANTIDADE: " + material.getQuantidade());
         });
+        System.out.println("Selecione um id");
+        int escolha = input.nextInt();
+        input.nextLine();
 
 
 
