@@ -27,6 +27,9 @@ public class Executar {
                 executar.RegistrarNotaEntrega();
                 break;
             }
+            case 4:{
+                executar.CriarRequisiçãodeMaterial();
+            }
 
 
         }

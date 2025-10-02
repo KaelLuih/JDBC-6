@@ -2,6 +2,7 @@ package org.example.dao;
 
 import org.example.model.Fornecedor;
 import org.example.model.Material;
+import org.example.model.NotaEntradaItem;
 import org.example.util.Conexao;
 
 import java.sql.*;
@@ -55,6 +56,19 @@ public class MaterialDAO {
             }
         }
         return materials;
+    }
+    public void atualizarQuantidade(double quantidade) throws SQLException{
+      String  query = """
+            UPDATE Material
+            SET estoque = estoque + ?
+            WHERE id = ?
+            """;
+        try(Connection conn = Conexao.conectar();
+            PreparedStatement stmt = conn.prepareStatement(query)){
+            stmt.setDouble(1, notaEntradaItem.getQuantidade());
+            stmt.setInt(2, material.getId());
+            stmt.executeUpdate();
+        }
     }
 
 

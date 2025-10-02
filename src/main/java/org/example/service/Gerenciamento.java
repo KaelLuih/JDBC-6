@@ -1,9 +1,6 @@
 package org.example.service;
 
-import org.example.dao.FornecedorDAO;
-import org.example.dao.MaterialDAO;
-import org.example.dao.NotaEntradaDAO;
-import org.example.dao.NotaEntradaItemDAO;
+import org.example.dao.*;
 import org.example.model.*;
 
 import java.sql.SQLException;
@@ -82,6 +79,7 @@ public class Gerenciamento {
             System.out.println("___________");
             System.out.println("CNPJ :" + fornecedor.getCnpj());
             System.out.println("___________");
+            System.out.println("\n \n");
         });
 
 
@@ -159,12 +157,25 @@ public class Gerenciamento {
         }
     }
     public void CriarRequisiçãodeMaterial()throws SQLException{
+
         var materialDAO = new MaterialDAO();
+        var Requisicao = new RequisicaoDAO();
+
         List<Material> listarMAterial = materialDAO.ListarMaterial();
 
+
+        List<Integer> opcoesMAterial = new ArrayList<>();
+
+
+
         System.out.println("Digite o setor da requisição");
-        String setor;
+        String setor = input.nextLine();
+        LocalDateTime data = LocalDateTime.now();
+
+        Requisicao.CriarRequisicao(new Requisicao(setor,data,"PENDENTE"));
+        int idRequsicao = Requisicao.Ultimoid();
         listarMAterial.forEach(material -> {
+            System.out.println("--- MATERIALS --- \n");
             System.out.println("ID: " + material.getId());
             System.out.println("___________");
             System.out.println("NOME: " + material.getNome());
@@ -172,10 +183,113 @@ public class Gerenciamento {
             System.out.println("UNIDADE: " + material.getUnidade());
             System.out.println("___________");
             System.out.println("QUANTIDADE: " + material.getQuantidade());
+
+            System.out.println("\n");
+            opcoesMAterial.add(material.getId());
+
         });
         System.out.println("Selecione um id");
-        int escolha = input.nextInt();
+        int idMaterial = input.nextInt();
         input.nextLine();
+
+        if(opcoesMAterial.contains(idMaterial)){
+            System.out.println("Digite a quantidade de peças");
+            double quantidade = input.nextDouble();
+            input.nextLine();
+
+            int indiceMaterial = opcoesMAterial.indexOf(idMaterial);
+            Material materialescolhido = listarMAterial.get(indiceMaterial);
+
+
+            if(materialescolhido.getQuantidade() >= quantidade){
+                var RequisicaoItem = new RequisicaoItemDAO();
+                RequisicaoItem.CadastrarRequisicaoItem(new RequisicaoItem(idRequsicao,idMaterial,quantidade));
+                System.out.println("Cadastrado com sucesso");
+
+                }else{
+                System.out.println("Numero invalido");
+            }
+
+
+            }else{
+            System.out.println("A opção nao existe");
+        }
+        }
+
+        public void AtenderRequisicao()throws SQLException{
+        var materialDAO = new MaterialDAO();
+        var Requisicao = new RequisicaoDAO();
+
+        List<Requisicao> listarRequisicoes = Requisicao.listarRequisicoes();
+        List<Material> listarMAterial = materialDAO.ListarMaterial();
+        List<Integer> opcoesRequisicoes = new ArrayList<>();
+        List<Integer> opcoesMAterial = new ArrayList<>();
+
+
+
+
+            listarRequisicoes.forEach(requisicao -> {
+
+                System.out.println("ID: " + requisicao.getId());
+
+                System.out.println("___________");
+
+                System.out.println("SETOR: " + requisicao.getSetor());
+
+                System.out.println("___________");
+
+                System.out.println("DATA DA SOLICITAÇÂO" + requisicao.getDataSolicitacao());
+
+                opcoesRequisicoes.add(requisicao.getId());
+
+            });
+
+            System.out.println("Selecione a Requisição que deseja arrumar");
+            int idRequisicao = input.nextInt();
+
+            listarMAterial.forEach(material -> {
+                System.out.println("--- MATERIALS --- \n");
+                System.out.println("ID: " + material.getId());
+                System.out.println("___________");
+                System.out.println("NOME: " + material.getNome());
+                System.out.println("___________");
+                System.out.println("UNIDADE: " + material.getUnidade());
+                System.out.println("___________");
+                System.out.println("QUANTIDADE: " + material.getQuantidade());
+
+                System.out.println("\n");
+                opcoesMAterial.add(material.getId());
+
+            });
+
+            System.out.println("Selecione um id");
+            int idMaterial = input.nextInt();
+            input.nextLine();
+
+            if(opcoesMAterial.contains(idMaterial)){
+                System.out.println("Digite a quantidade de material que ira utilizar no estoque ");
+                double quantidade = input.nextDouble();
+                input.nextLine();
+
+                int indiceMaterial = opcoesMAterial.indexOf(idMaterial);
+                Material materialescolhido = listarMAterial.get(indiceMaterial);
+
+
+                if(materialescolhido.getQuantidade() >= quantidade){
+                    materialDAO.atualizarQuantidade(quantidade);
+                    System.out.println("Cadastrado com sucesso");
+
+                }else{
+                    System.out.println("Numero invalido");
+                }
+
+
+            }else{
+                System.out.println("A opção nao existe");
+            }
+
+        }
+
 
 
 
@@ -185,4 +299,4 @@ public class Gerenciamento {
     }
 
 
-}
+

@@ -1,23 +1,24 @@
 package org.example.model;
 
 import java.time.LocalDate;
+import java.time.LocalDateTime;
 
 public class Requisicao {
 
     private int id;
     private String setor;
-    private LocalDate dataSolicitacao;
+    private LocalDateTime dataSolicitacao;
     private String status;
 
 
-    public Requisicao(int id, String setor, LocalDate dataSolicitacao, String status) {
+    public Requisicao(int id, String setor, LocalDateTime dataSolicitacao, String status) {
         this.id = id;
         this.setor = setor;
         this.dataSolicitacao = dataSolicitacao;
         this.status = status;
     }
 
-    public Requisicao(String setor, LocalDate dataSolicitacao, String status) {
+    public Requisicao(String setor, LocalDateTime dataSolicitacao, String status) {
         this.setor = setor;
         this.dataSolicitacao = dataSolicitacao;
         this.status = status;
@@ -39,11 +40,11 @@ public class Requisicao {
         this.setor = setor;
     }
 
-    public LocalDate getDataSolicitacao() {
+    public LocalDateTime getDataSolicitacao() {
         return dataSolicitacao;
     }
 
-    public void setDataSolicitacao(LocalDate dataSolicitacao) {
+    public void setDataSolicitacao(LocalDateTime dataSolicitacao) {
         this.dataSolicitacao = dataSolicitacao;
     }
 
