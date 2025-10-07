@@ -29,6 +29,10 @@ public class Executar {
             }
             case 4:{
                 executar.CriarRequisiçãodeMaterial();
+                break;
+            }
+            case 5:{
+                executar.AtenderRequisicao();
             }
 
 

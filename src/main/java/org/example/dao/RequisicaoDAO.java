@@ -29,7 +29,7 @@ public class RequisicaoDAO {
         List<Requisicao> requisicaos = new ArrayList<>();
         String query = "SELECT id , setor , dataSolicitacao " +
                 "FROM Requisicao" +
-                "WHERE status = 'PENDENTE'";
+                " WHERE status = 'PENDENTE'";
         try(Connection conn = Conexao.conectar();
         PreparedStatement stmt = conn.prepareStatement(query)){
             ResultSet rs = stmt.executeQuery();
@@ -56,6 +56,19 @@ public class RequisicaoDAO {
             }
         }
         return ultimoID;
+    }
+    public void AtualizarPendente(int id)throws SQLException{
+        String query = """
+                UPDATE Requisicao
+                SET status = 'ATENDIDA'
+                WHERE id = ?
+                
+                """;
+        try (Connection conn = Conexao.conectar();
+        PreparedStatement stmt = conn.prepareStatement(query)){
+            stmt.setInt(1,id);
+            stmt.executeUpdate();
+        }
     }
 
 

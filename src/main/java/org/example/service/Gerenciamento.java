@@ -276,11 +276,12 @@ public class Gerenciamento {
 
 
                 if(materialescolhido.getQuantidade() >= quantidade){
-                    materialDAO.atualizarQuantidade(quantidade);
-                    System.out.println("Cadastrado com sucesso");
+                    materialDAO.atualizarQuantidade(quantidade,idMaterial);
+                    Requisicao.AtualizarPendente(idRequisicao);
+                    System.out.println("“Requisição atendida com sucesso!");
 
                 }else{
-                    System.out.println("Numero invalido");
+                    System.out.println("Estoque insuficiente para atender a requisição!");
                 }
 
 
